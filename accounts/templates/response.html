@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Form Responses</h2>
+<table>
+    <tr>
+        <th>Field</th>
+        <th>Response</th>
+    </tr>
+    {% for response in responses %}
+    <tr>
+        <td>{{ response.field.label }}</td>
+        <td>{{ response.value }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

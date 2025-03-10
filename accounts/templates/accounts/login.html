@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<style>
+    /* Set background image */
+    body {
+        background-image: url("{% static 'images/loginpagebg.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    /* Container to center the card */
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    /* Card Styling */
+    .card {
+        width: 30rem;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(10, 10, 10, 0.1);
+        background: #244376;
+    }
+
+    .card-body {
+        background: none;
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+    }
+
+    .card-title {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: white;
+    }
+
+    .form-group label {
+        color: white;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        color: white;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-primary {
+        width: 60%;
+        padding: 12px;
+        font-size: 15px;
+        font-weight: bold;
+        border-radius: 8px;
+        background-color: #4a9bf1;
+        border: none;
+        margin-top: 10px;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .link-container {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .link-container a {
+        color: white;
+        text-decoration: none;
+    }
+
+    .link-container a:hover {
+        text-decoration: underline;
+    }
+
+    .btn {
+        background-color: #2C4C9C;
+        width: 40%;
+        margin-top: 10px;
+        /* Premium Blue */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #228B22;
+        /* Darker shade of Premium Blue */
+    }
+</style>
+
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Login</h5>
+
+            {% if messages %}
+            {% for message in messages %}
+            <p style="color: red;">{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username">Username:</label>
+                    <input type="text" name="username" id="id_username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_password">Password:</label>
+                    <input type="password" name="password" id="id_password" class="form-control" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn">Login</button>
+                </div>
+            </form>
+
+            <div class="link-container">
+                {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}">Register</a> |
+                <a href="{% url 'password_reset' %}">Forgot your password?</a>
+                {% else %}
+                <a href="{% url 'change_password' %}">Change Password</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

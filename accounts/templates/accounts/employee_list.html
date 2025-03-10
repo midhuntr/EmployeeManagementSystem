@@ -1,0 +1,109 @@
+{% load filters %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<style>
+    .form-control {
+        max-width: 250px;
+        gap: 0;
+        /* Adjust as needed */
+    }
+
+    .btn-primary {
+        margin-left: 10px;
+        max-width: 100px;
+        /* Adjust as needed */
+    }
+
+    .col-auto {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .btn-primary, .form-control {
+        display: inline-block;
+    }
+</style>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Employee List</h2>
+
+        <!-- Search Form with Filters -->
+        <form method="get" class="mb-4">
+            <div class="row g-2 align-items-center">
+                <div class="col-auto">
+                    <input type="text" class="form-control" name="search" placeholder="Search employees" value="{{ search_query }}">
+                </div>
+
+                <!-- Dynamic Field Filters -->
+                {% for field in dynamic_fields %}
+                <div class="col-auto">
+                    <input type="text" class="form-control" name="filter_{{ field.label }}" placeholder="Filter by {{ field.label }}" value="{{ request.GET|get_filter_value:field.label }}">
+                </div>
+                {% endfor %}
+
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Employee Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Job Title</th>
+                    <th>Department</th>
+                    <th>Phone Number</th>
+                    <!-- Add dynamic fields here -->
+                    {% for field in dynamic_fields %}
+                    <th>{{ field.label }}</th>
+                    {% endfor %}
+                    <th>Actions</th> <!-- New column for delete button -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.full_name }}</td>
+                    <td>{{ employee.job_title }}</td>
+                    <td>{{ employee.department }}</td>
+                    <td>{{ employee.phone_number }}</td>
+                    <!-- Display dynamic fields here -->
+                    {% for field in dynamic_fields %}
+                    <td>{{ employee.dynamic_data|get_dynamic_value:field.label }}</td>
+                    {% endfor %}
+                    <td>
+                        <!-- Delete button with confirmation -->
+                        <form action="{% url 'delete_employee' employee.id %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this employee?');">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="{{ 5|add:dynamic_fields|length }}" class="text-center">No employees found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Builder</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let formBox = document.getElementById("form-box");
+
+            let sortable = new Sortable(formBox, {
+                animation: 150,
+                ghostClass: "sortable-ghost",
+                chosenClass: "sortable-chosen",
+                onEnd: function (evt) {
+                    saveFieldOrder(); // Save order when dragged
+                }
+            });
+
+            document.getElementById("add-field-btn").addEventListener("click", addField);
+            document.getElementById("save-form-btn").addEventListener("click", function (event) {
+                event.preventDefault();
+                saveForm();
+            });
+
+            function addField() {
+                let fieldCount = document.querySelectorAll(".form-field").length;
+
+                let fieldDiv = document.createElement("div");
+                fieldDiv.className = "form-field";
+                fieldDiv.setAttribute("data-id", fieldCount + 1);
+
+                let label = document.createElement("label");
+                label.innerText = "Field Label:";
+
+                let input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = "Enter field label";
+
+                let selectLabel = document.createElement("label");
+                selectLabel.innerText = "Field Type:";
+
+                let select = document.createElement("select");
+                let fieldTypes = ["text", "number", "date", "password"];
+                fieldTypes.forEach(type => {
+                    let option = document.createElement("option");
+                    option.value = type;
+                    option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                    select.appendChild(option);
+                });
+
+                fieldDiv.appendChild(label);
+                fieldDiv.appendChild(input);
+                fieldDiv.appendChild(selectLabel);
+                fieldDiv.appendChild(select);
+                formBox.appendChild(fieldDiv);
+            }
+
+            function saveForm() {
+                let fields = document.querySelectorAll(".form-field");
+                let fieldData = [];
+
+                fields.forEach(field => {
+                    let label = field.querySelector("input").value.trim();
+                    let type = field.querySelector("select").value;
+                    if (label) { // Only save fields with labels
+                        fieldData.push({ label, type });
+                    }
+                });
+
+                fetch("{% url 'save_form' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({ fields: fieldData })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Form saved:", data);
+                        alert("Form saved successfully!");
+                        formBox.innerHTML = "";  // ✅ Clear form box after saving
+                    })
+                    .catch(error => console.error("Error saving form:", error));
+            }
+        });
+    </script>
+
+    <style>
+        /* Center the entire page content */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Container for the form content */
+        .form-container {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: #333;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 8px 16px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #form-box {
+            border: 2px dashed #ccc;
+            padding: 10px;
+            min-height: 100px;
+            margin-top: 15px;
+        }
+
+        .form-field {
+            background: #f1f1f1;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            cursor: grab;
+        }
+
+        .sortable-ghost {
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Form Builder</h2>
+        <button type="button" id="add-field-btn">Add Field</button>
+
+        <h3>Form Preview</h3>
+        <div id="form-box">
+            <!-- New fields will appear here -->
+            {% for field in fields %}
+            <div class="form-field" data-id="{{ field.id }}">
+                <label for="field_{{ field.id }}">Field Label:</label>
+                <input type="text" id="field_{{ field.id }}" value="{{ field.label }}" disabled>
+
+                <label for="select_{{ field.id }}">Field Type:</label>
+                <select id="select_{{ field.id }}" disabled>
+                    <option value="{{ field.field_type }}" selected>{{ field.field_type }}</option>
+                </select>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" id="save-form-btn">Save Form</button>
+        </form>
+    </div>
+</body>
+
+</html>

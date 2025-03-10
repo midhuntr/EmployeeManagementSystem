@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Employee</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Create Employee</h2>
+        <form id="employeeForm" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Create Employee</button>
+                <a href="{% url 'employee_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Axios Library -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById("employeeForm").addEventListener("submit", function (e) {
+            e.preventDefault();  // Prevent default form submission
+
+            let formData = new FormData(this);
+            let data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            axios.post("{% url 'create_employee' %}", data, {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+            .then(function(response) {
+                if (response.data.success) {
+                    alert("Employee created successfully!");
+                    window.location.href = response.data.redirect_url;  // Redirect to employee list
+                } else {
+                    alert("Error: " + JSON.stringify(response.data.errors));
+                }
+            })
+            .catch(function(error) {
+                alert("An error occurred while creating employee.");
+                console.error(error);
+            });
+        });
+    </script>
+
+</body>
+</html>

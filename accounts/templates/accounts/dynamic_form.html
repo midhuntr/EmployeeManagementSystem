@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Form Builder</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui/1.12.1/jquery-ui.min.js"></script>
+</head>
+<body>
+    <h2>Dynamic Form Builder</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label>Field Label:</label>
+        <input type="text" name="label" required>
+        <label>Field Type:</label>
+        <select name="field_type">
+            <option value="text">Text</option>
+            <option value="number">Number</option>
+            <option value="date">Date</option>
+            <option value="password">Password</option>
+        </select>
+        <button type="submit">Add Field</button>
+    </form>
+
+    <h3>Generated Form</h3>
+    <form method="POST">
+        {% csrf_token %}
+        <div id="sortable">
+            {{ form.as_p }}
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        $(function() {
+            $("#sortable").sortable();
+            $("#sortable").disableSelection();
+        });
+    </script>
+</body>
+</html>
