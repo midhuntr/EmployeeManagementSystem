@@ -11,10 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from .forms import UserRegisterForm
 
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
 from .forms import UserRegisterForm
-from django.contrib.auth.models import User
 
 def register(request):
     if request.method == 'POST':
@@ -24,17 +21,13 @@ def register(request):
             user.set_password(form.cleaned_data['password'])  # Hash the password
             user.save()
 
-            login(request, user)  # Auto-login after registration
+            login(request, user)  
 
-            # Redirect to the login page
-            return redirect('login')  # Assuming 'login' is the name of your login view
+            return redirect('login') 
     else:
         form = UserRegisterForm()
     
     return render(request, 'accounts/register.html', {'form': form})
-
-
-
 
 
 from django.shortcuts import render, redirect
@@ -52,7 +45,7 @@ def user_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, "You have successfully logged in.")
-                return redirect('home')  # Redirect to home page after login
+                return redirect('home')  
             else:
                 messages.error(request, "Invalid username or password.")
         else:
@@ -76,16 +69,14 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-# Change Password View
 @login_required
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
             form.save()
-            # After password is changed, update session so the user remains logged in
             update_session_auth_hash(request, form.user)
-            return redirect('login')  # Redirect to login page after successful password change
+            return redirect('login')  
     else:
         form = PasswordChangeForm(user=request.user)
     
@@ -115,17 +106,15 @@ def form_builder(request):
             FormField.objects.create(user=request.user, label=label, field_type=field_type)
             return redirect("form_builder")
 
-    fields = FormField.objects.filter(user=request.user)  # Fetch user-specific fields
+    fields = FormField.objects.filter(user=request.user)  
     form = DynamicForm()
     return render(request, "accounts/form_builder.html", {"fields": fields, "form": form})
 
-# employee_management/views.py
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 @login_required
 def profile(request):
-    # Render the profile page, passing in the username of the logged-in user
     return render(request, 'profile.html', {'username': request.user.username})
 
 
@@ -149,7 +138,6 @@ def save_field_order(request):
                 field_id = field_data.get("id")
                 position = field_data.get("position")
                 
-                # Update field position in the database
                 FormField.objects.filter(id=field_id).update(position=position)
 
             return JsonResponse({"status": "success"})
@@ -176,8 +164,6 @@ def save_form(request):
 @login_required
 def profile_setup(request):
     if request.method == "POST":
-        # Handle the form submission and create an Employee object
-        # For simplicity, assume you're creating the Employee object directly from the form data
         full_name = request.POST.get("full_name")
         date_of_birth = request.POST.get("date_of_birth")
         gender = request.POST.get("gender")
@@ -187,7 +173,6 @@ def profile_setup(request):
         job_title = request.POST.get("job_title")
         department = request.POST.get("department")
 
-        # Create the Employee object
         Employee.objects.create(
             user=request.user,
             full_name=full_name,
@@ -201,7 +186,7 @@ def profile_setup(request):
         )
 
         messages.success(request, "Profile setup completed successfully.")
-        return redirect('profile')  # Redirect to the profile page after setting it up
+        return redirect('profile') 
 
     return render(request, 'accounts/profile_setup.html')
 
@@ -210,7 +195,7 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Employee  # Import the Employee model
+from .models import Employee  
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -221,8 +206,8 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Employee  # Import Employee model
-from .forms import EmployeeForm  # Import EmployeeForm
+from .models import Employee  
+from .forms import EmployeeForm  
 
 @login_required
 def create_employee(request):
@@ -230,18 +215,16 @@ def create_employee(request):
         form = EmployeeForm(request.POST)
         if form.is_valid():
             employee = form.save(commit=False)  
-            employee.user = request.user  # Associate employee with logged-in user
+            employee.user = request.user  
             employee.save()
             
-            # Handle AJAX request (JSON response)
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({"success": True, "redirect_url": "/accounts/employee_list/"})
             
             messages.success(request, "Employee added successfully!")
-            return redirect("employee_list")  # Redirect to employee list page
+            return redirect("employee_list")  
         
         else:
-            # Handle form errors (for AJAX requests)
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({"success": False, "errors": form.errors})
             
@@ -263,7 +246,6 @@ def employee_list(request):
     employees = Employee.objects.all()
     dynamic_fields = DynamicField.objects.all()
 
-    # Apply search filters
     if search_query:
         employees = employees.filter(
             Q(full_name__icontains=search_query) |
@@ -272,7 +254,6 @@ def employee_list(request):
             Q(phone_number__icontains=search_query)
         )
 
-    # Apply dynamic field filters
     filter_conditions = Q()
     for field in dynamic_fields:
         filter_value = request.GET.get(f'filter_{field.label}', '').strip()
@@ -299,7 +280,6 @@ def delete_employee(request, employee_id):
     if request.method == "POST":
         employee.delete()
         messages.success(request, "Employee deleted successfully!")
-        return redirect("employee_list")  # Update with your actual employee list view name
-
-    return redirect("employee_list")  # Redirect back if not a POST request
+        return redirect("employee_list")  
+    return redirect("employee_list")  
 

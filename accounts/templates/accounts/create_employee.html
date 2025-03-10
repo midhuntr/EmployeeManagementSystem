@@ -12,7 +12,6 @@
         <form method="post">
             {% csrf_token %}
 
-            <!-- Default Fields -->
             <div class="mb-3">
                 <label class="form-label">Full Name</label>
                 <input type="text" class="form-control" name="full_name" required>
@@ -60,9 +59,7 @@
                 <input type="text" class="form-control" name="department" required>
             </div>
 
-            <!-- Dynamic Fields -->
             <div id="dynamicFieldsContainer">
-                <!-- Dynamic fields will appear here -->
             </div>
 
             <button type="button" id="addDynamicFieldBtn" class="btn btn-secondary mb-3">Add Custom Field</button>
@@ -75,7 +72,6 @@
     </div>
 
     <script>
-        // JavaScript to dynamically add custom fields
         let dynamicFieldCount = 0;
 
         document.getElementById('addDynamicFieldBtn').addEventListener('click', function () {

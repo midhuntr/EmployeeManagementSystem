@@ -14,13 +14,11 @@
     .form-control {
         max-width: 250px;
         gap: 0;
-        /* Adjust as needed */
     }
 
     .btn-primary {
         margin-left: 10px;
         max-width: 100px;
-        /* Adjust as needed */
     }
 
     .col-auto {
@@ -44,7 +42,6 @@
                     <input type="text" class="form-control" name="search" placeholder="Search employees" value="{{ search_query }}">
                 </div>
 
-                <!-- Dynamic Field Filters -->
                 {% for field in dynamic_fields %}
                 <div class="col-auto">
                     <input type="text" class="form-control" name="filter_{{ field.label }}" placeholder="Filter by {{ field.label }}" value="{{ request.GET|get_filter_value:field.label }}">
@@ -57,7 +54,6 @@
             </div>
         </form>
 
-        <!-- Employee Table -->
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -65,11 +61,10 @@
                     <th>Job Title</th>
                     <th>Department</th>
                     <th>Phone Number</th>
-                    <!-- Add dynamic fields here -->
                     {% for field in dynamic_fields %}
                     <th>{{ field.label }}</th>
                     {% endfor %}
-                    <th>Actions</th> <!-- New column for delete button -->
+                    <th>Actions</th> 
                 </tr>
             </thead>
             <tbody>
@@ -79,12 +74,10 @@
                     <td>{{ employee.job_title }}</td>
                     <td>{{ employee.department }}</td>
                     <td>{{ employee.phone_number }}</td>
-                    <!-- Display dynamic fields here -->
                     {% for field in dynamic_fields %}
                     <td>{{ employee.dynamic_data|get_dynamic_value:field.label }}</td>
                     {% endfor %}
                     <td>
-                        <!-- Delete button with confirmation -->
                         <form action="{% url 'delete_employee' employee.id %}" method="POST" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger btn-sm"

@@ -32,7 +32,7 @@ class DynamicForm(forms.Form):
                 self.fields[field.label] = forms.CharField(label=field.label, widget=forms.PasswordInput)
 
 from django import forms
-from .models import Employee  # Import Employee model
+from .models import Employee  
 
 class EmployeeForm(forms.ModelForm):
     class Meta:

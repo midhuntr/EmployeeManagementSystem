@@ -14,10 +14,9 @@ body {
     background: url("{% static 'images/loginpagebg.jpg' %}") center/cover no-repeat;
     height: 70vh;
     margin: 0;
-    position: relative; /* Ensure pseudo-element works correctly */
+    position: relative; 
 }
 
-/* Add second background image above the first one using ::before */
 body::before {
     content: "";
     position: absolute;
@@ -26,7 +25,7 @@ body::before {
     width: 100%;
     height: 110%;
     background: url("{% static 'images/background1.jpg' %}") center/contain no-repeat;
-    z-index: 1; /* Ensures the image is above the body background */
+    z-index: 1; 
 }
 
     a{
@@ -35,7 +34,6 @@ body::before {
 </style>
 
 <body>
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">EMPLOYEE MANAGEMENT</a>
@@ -65,7 +63,6 @@ body::before {
         </div>
     </nav>
 
-    <!-- Welcome Message -->
     <div class="container mt-4">
         <h2>Welcome, {{ user.username }}!</h2>
         <p>Manage employees and forms from the navigation menu above.</p>

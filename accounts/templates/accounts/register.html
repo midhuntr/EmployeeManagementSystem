@@ -14,7 +14,7 @@
                 <h2 class="text-center mb-4">Register</h2>
                 <form method="POST">
                     {% csrf_token %}
-                    {{ form.as_p }}  <!-- This renders the form fields (username, email, password) -->
+                    {{ form.as_p }}  
                     <div class="text-center mt-3">
                         <button type="submit" class="btn btn-primary w-100">Register</button>
                     </div>
