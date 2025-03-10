@@ -57,7 +57,7 @@ cd employee-management-system
 Access the Application
 ----------------------
 
-Login: http://127.0.0.1:8000/accounts/login/
+Login: http://127.0.0.1:8000/
 
 Admin Panel: http://127.0.0.1:8000/admin/
 
@@ -65,7 +65,7 @@ Admin Panel: http://127.0.0.1:8000/admin/
 *) Technologies Used
 --------------------
 
-Backend: Django, Django ORM
+Backend: Django
 
 Frontend: HTML, CSS, JavaScript, Bootstrap
 
